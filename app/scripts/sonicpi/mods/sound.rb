@@ -96,24 +96,48 @@ module SonicPi
 				 s
 			 end
 
+			 # stuff for locking stuff to a scale
+			 scale_degrees = [0, 3, 5, 7, 10]
+
+			 # sets scale to major pentatonic
+			 def happy
+				 scale_degrees = [0, 2, 4, 7, 9]
+			 end
+
+			 # sets scale to major pentatonic
+			 def sad
+				 scale_degrees = [0, 3, 5, 7, 10]
+			 end
+
+			 # locks notes to a scale
+			 def lock_to_scale(n)
+			   # make the first degree 1 instead of 0
+				 n = n - 1
+
+				 octave = n / scale_degrees.length
+				 degree = scale_degrees[n % scale_degrees.length]
+
+			   return 60 + (octave * 12) + degree
+			 end
+
 			 def saw(n)
 				 with_synth "saw_beep"
-				 play(n)
+				 play(lock_to_scale(n))
 			 end
 
 			 def fm(n)
 				 with_synth "fm"
-				 play(n)
+				 play(lock_to_scale(n))
 			 end
 
 			 def beep(n)
 				 with_synth "beep"
-				 play(n)
+				 play(lock_to_scale(n))
 			 end
 
 			 def bell(n)
 				 with_synth "pretty_bell"
-				 play(n)
+				 play(lock_to_scale(n))
 			 end
 
 			 def play(n, *args)
