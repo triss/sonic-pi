@@ -60,215 +60,220 @@ module SonicPi
          @mod_sound_studio.sched_ahead_time(t)
        end
 
-       def with_synth(synth_name)
-         @mod_sound_studio.current_synth_name = synth_name
-       end
+			 def with_synth(synth_name)
+				 @mod_sound_studio.current_synth_name = synth_name
+			 end
 
-       def trigger_sp_synth(synth_name, *args)
-         job_id = current_job_id
-         args_h = Hash[*args]
-         t_l_args = Thread.current.thread_variable_get(:sonic_pi_mod_sound_synth_defaults) || {}
-         args = t_l_args.merge(args_h).to_a.flatten
-         p = Promise.new
-         job_synth_proms_add(job_id, p)
-         __message "playing #{synth_name} with: #{args}"
-         s = @mod_sound_studio.trigger_sp_synth synth_name, job_synth_group(current_job_id), *args
-         s.on_destroyed do
-           job_synth_proms_rm(job_id, p)
-           p.deliver! true
-         end
-         s
-       end
+			 def trigger_sp_synth(synth_name, *args)
+				 job_id = current_job_id
+				 args_h = Hash[*args]
+				 t_l_args = Thread.current.thread_variable_get(:sonic_pi_mod_sound_synth_defaults) || {}
+				 args = t_l_args.merge(args_h).to_a.flatten
+				 p = Promise.new
+				 job_synth_proms_add(job_id, p)
+				 __message "playing #{synth_name} with: #{args}"
+				 s = @mod_sound_studio.trigger_sp_synth synth_name, job_synth_group(current_job_id), *args
+				 s.on_destroyed do
+					 job_synth_proms_rm(job_id, p)
+					 p.deliver! true
+				 end
+				 s
+			 end
 
-       def trigger_synth(synth_name, *args)
-         job_id = current_job_id
-         args_h = Hash[*args]
-         t_l_args = Thread.current.thread_variable_get(:sonic_pi_mod_sound_synth_defaults) || {}
-         args = t_l_args.merge(args_h).to_a.flatten
-         p = Promise.new
-         job_synth_proms_add(job_id, p)
-         __message "playing #{synth_name} with: #{args}"
-         s = @mod_sound_studio.trigger_synth synth_name, job_synth_group(current_job_id), *args
-         s.on_destroyed do
-           job_synth_proms_rm(job_id, p)
-           p.deliver! true
-         end
-         s
-       end
+			 def trigger_synth(synth_name, *args)
+				 job_id = current_job_id
+				 args_h = Hash[*args]
+				 t_l_args = Thread.current.thread_variable_get(:sonic_pi_mod_sound_synth_defaults) || {}
+				 args = t_l_args.merge(args_h).to_a.flatten
+				 p = Promise.new
+				 job_synth_proms_add(job_id, p)
+				 __message "playing #{synth_name} with: #{args}"
+				 s = @mod_sound_studio.trigger_synth synth_name, job_synth_group(current_job_id), *args
+				 s.on_destroyed do
+					 job_synth_proms_rm(job_id, p)
+					 p.deliver! true
+				 end
+				 s
+			 end
 
-       def play(n, *args)
-         n = note(n)
-         trigger_sp_synth @mod_sound_studio.current_synth_name, "note", n, *args if n
-       end
+			 def bell(n)
+				 with_synth "pretty_bell"
+				 play(n)
+			 end
 
-       def repeat(&block)
-         while true
-           block.call
-         end
-       end
+			 def play(n, *args)
+				 n = note(n)
+				 trigger_sp_synth @mod_sound_studio.current_synth_name, "note", n, *args if n
+			 end
 
-       def with_synth_defaults(*args)
-         Thread.current.thread_variable_set :sonic_pi_mod_sound_synth_defaults, Hash[*args]
-       end
+			 def repeat(&block)
+				 while true
+					 block.call
+				 end
+			 end
 
-       def with_tempo(n)
-         @mod_sound_studio.bpm = n
-       end
+			 def with_synth_defaults(*args)
+				 Thread.current.thread_variable_set :sonic_pi_mod_sound_synth_defaults, Hash[*args]
+			 end
 
-       def current_tempo
-         @mod_sound_studio.bpm
-       end
+			 def with_tempo(n)
+				 @mod_sound_studio.bpm = n
+			 end
 
-       def play_pattern(notes, *args)
-         notes.each{|note| play(note, *args) ; sleep(@mod_sound_studio.beat_s)}
-       end
+			 def current_tempo
+				 @mod_sound_studio.bpm
+			 end
 
-       def play_pattern_timed(notes, times, *args)
-         notes.each_with_index{|note, idx| play(note, *args) ; sleep(times[idx % times.size])}
-       end
+			 def play_pattern(notes, *args)
+				 notes.each{|note| play(note, *args) ; sleep(@mod_sound_studio.beat_s)}
+			 end
 
-       def play_chord(notes, *args)
-         notes.each{|note| play(note, *args)}
-       end
+			 def play_pattern_timed(notes, times, *args)
+				 notes.each_with_index{|note, idx| play(note, *args) ; sleep(times[idx % times.size])}
+			 end
 
-       def play_pad(name, *args)
-         if args.size == 1
-           @mod_sound_studio.switch_to_pad(name, "note", args[0])
-         else
-           @mod_sound_studio.switch_to_pad(name, *args)
-         end
-       end
+			 def play_chord(notes, *args)
+				 notes.each{|note| play(note, *args)}
+			 end
 
-       def control_pad(*args)
-         @mod_sound_studio.control_pad(*args)
-       end
+			 def play_pad(name, *args)
+				 if args.size == 1
+					 @mod_sound_studio.switch_to_pad(name, "note", args[0])
+				 else
+					 @mod_sound_studio.switch_to_pad(name, *args)
+				 end
+			 end
 
-       def comms_eval(code)
-         eval(code)
-         STDOUT.flush
-         STDOUT.flush
-         Thread.list.map {|t| t.join 60}
-       end
+			 def control_pad(*args)
+				 @mod_sound_studio.control_pad(*args)
+			 end
 
-       def debug!
-         @mod_sound_studio.debug = true
-       end
+			 def comms_eval(code)
+				 eval(code)
+				 STDOUT.flush
+				 STDOUT.flush
+				 Thread.list.map {|t| t.join 60}
+			 end
 
-       def debug_off!
-         @mod_sound_studio.debug = false
-       end
+			 def debug!
+				 @mod_sound_studio.debug = true
+			 end
 
-       def with_volume(vol)
-         if (vol < 0)
-           @mod_sound_studio.volume = 0
-         elsif (vol > 20)
-           @mod_sound_studio.volume = 20
-         else
-           @mod_sound_studio.volume = vol
-         end
-       end
+			 def debug_off!
+				 @mod_sound_studio.debug = false
+			 end
 
-       def resolve_sample_symbol_path(sym)
-         samples_path + "/" + sym.to_s + ".wav"
-       end
+			 def with_volume(vol)
+				 if (vol < 0)
+					 @mod_sound_studio.volume = 0
+				 elsif (vol > 20)
+					 @mod_sound_studio.volume = 20
+				 else
+					 @mod_sound_studio.volume = vol
+				 end
+			 end
 
-       def load_sample(path)
-         if path.class == Symbol
-           path = resolve_sample_symbol_path(path)
-         end
+			 def resolve_sample_symbol_path(sym)
+				 samples_path + "/" + sym.to_s + ".wav"
+			 end
 
-         @mod_sound_studio.load_sample(path)
-       end
+			 def load_sample(path)
+				 if path.class == Symbol
+					 path = resolve_sample_symbol_path(path)
+				 end
 
-       def load_samples(*paths)
-         paths.each{|p| load_sample p}
-       end
+				 @mod_sound_studio.load_sample(path)
+			 end
 
-       def sample_info(path)
-         load_sample(path)
-       end
+			 def load_samples(*paths)
+				 paths.each{|p| load_sample p}
+			 end
 
-       def sample_duration(path)
-         load_sample(path).duration
-       end
+			 def sample_info(path)
+				 load_sample(path)
+			 end
 
-       def sample(path, *args)
-         buf_info = load_sample(path)
-         synth_name = (buf_info.num_chans == 1) ? "sp/mono-player" : "sp/stereo-player"
-         __message "Playing sample: #{path}"
-         trigger_synth synth_name, "buf", buf_info.id, *args
-       end
+			 def sample_duration(path)
+				 load_sample(path).duration
+			 end
 
-       def status
-         __message @mod_sound_studio.status
-       end
+			 def sample(path, *args)
+				 buf_info = load_sample(path)
+				 synth_name = (buf_info.num_chans == 1) ? "sp/mono-player" : "sp/stereo-player"
+				 __message "Playing sample: #{path}"
+				 trigger_synth synth_name, "buf", buf_info.id, *args
+			 end
+
+			 def status
+				 __message @mod_sound_studio.status
+			 end
 
 
-       def note_info(n, o=nil)
-         @mod_sound_studio.note(n, o)
-       end
+			 def note_info(n, o=nil)
+				 @mod_sound_studio.note(n, o)
+			 end
 
-       def note(n, o=nil)
-         case n
-         when String
-           @mod_sound_studio.note(n, o).midi_note
-         when NilClass
-           nil
-         when Integer
-           n
-         when Float
-           n
-         when Symbol
-           note(n.to_s, o)
-         end
-       end
+			 def note(n, o=nil)
+				 case n
+				 when String
+					 @mod_sound_studio.note(n, o).midi_note
+				 when NilClass
+					 nil
+				 when Integer
+					 n
+				 when Float
+					 n
+				 when Symbol
+					 note(n.to_s, o)
+				 end
+			 end
 
-       private
+			 private
 
-       def current_job_id
-         Thread.current.thread_variable_get :sonic_pi_spider_job_id
-       end
+			 def current_job_id
+				 Thread.current.thread_variable_get :sonic_pi_spider_job_id
+			 end
 
-       def job_synth_group(job_id)
-         g = @JOB_GROUPS_A.deref[job_id]
-         return g if g
+			 def job_synth_group(job_id)
+				 g = @JOB_GROUPS_A.deref[job_id]
+				 return g if g
 
-         @JOB_GROUP_MUTEX.synchronize do
-           g = @JOB_GROUPS_A.deref[job_id]
-           return g if g
-           g = @mod_sound_studio.new_user_synth_group
+				 @JOB_GROUP_MUTEX.synchronize do
+					 g = @JOB_GROUPS_A.deref[job_id]
+					 return g if g
+					 g = @mod_sound_studio.new_user_synth_group
 
-           @JOB_GROUPS_A.swap! do |gs|
-             gs.put job_id, g
-           end
-         end
-         g
-       end
+					 @JOB_GROUPS_A.swap! do |gs|
+						 gs.put job_id, g
+					 end
+				 end
+				 g
+			 end
 
-       def job_synth_proms_add(job_id, p)
-         @JOB_SYNTH_PROMS_A.swap! do |js|
-           proms = js[job_id] || Hamster.set
-           proms = proms.add p
-           js.put job_id, proms
-         end
-       end
+			 def job_synth_proms_add(job_id, p)
+				 @JOB_SYNTH_PROMS_A.swap! do |js|
+					 proms = js[job_id] || Hamster.set
+					 proms = proms.add p
+					 js.put job_id, proms
+				 end
+			 end
 
-       def job_synth_proms_rm(job_id, p)
-         @JOB_SYNTH_PROMS_A.swap! do |js|
-           proms = js[job_id] || Hamster.set
-           proms = proms.delete p
-           js.put job_id, proms
-         end
-       end
+			 def job_synth_proms_rm(job_id, p)
+				 @JOB_SYNTH_PROMS_A.swap! do |js|
+					 proms = js[job_id] || Hamster.set
+					 proms = proms.delete p
+					 js.put job_id, proms
+				 end
+			 end
 
-       def kill_job_group(job_id)
-         old_job_groups = @JOB_GROUPS_A.swap_returning_old! do |js|
-           js.delete job_id
-         end
-         job_group = old_job_groups[job_id]
-         job_group.kill if job_group
+			 def kill_job_group(job_id)
+				 old_job_groups = @JOB_GROUPS_A.swap_returning_old! do |js|
+					 js.delete job_id
+				 end
+				 job_group = old_job_groups[job_id]
+				 job_group.kill if job_group
 
-       end
-     end
-   end
- end
+			 end
+		 end
+	 end
+end
