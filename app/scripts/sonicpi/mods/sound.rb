@@ -115,7 +115,7 @@ module SonicPi
 				 n = n - 1
 
 				 octave = n / @@scale_degrees.length
-				 degree = @@scale_degrees[n % scale_degrees.length]
+				 degree = @@scale_degrees[n % @@scale_degrees.length]
 
 			   return 60 + (octave * 12) + degree
 			 end
