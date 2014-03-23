@@ -96,6 +96,21 @@ module SonicPi
 				 s
 			 end
 
+			 def saw(n)
+				 with_synth "saw_beep"
+				 play(n)
+			 end
+
+			 def fm(n)
+				 with_synth "fm"
+				 play(n)
+			 end
+
+			 def beep(n)
+				 with_synth "beep"
+				 play(n)
+			 end
+
 			 def bell(n)
 				 with_synth "pretty_bell"
 				 play(n)
