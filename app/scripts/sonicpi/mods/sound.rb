@@ -97,16 +97,16 @@ module SonicPi
 			 end
 
 			 # stuff for locking stuff to a scale
-			 scale_degrees = [0, 3, 5, 7, 10]
+			 @@scale_degrees = [0, 3, 5, 7, 10]
 
 			 # sets scale to major pentatonic
 			 def happy
-				 scale_degrees = [0, 2, 4, 7, 9]
+				 @@scale_degrees = [0, 2, 4, 7, 9]
 			 end
 
 			 # sets scale to major pentatonic
 			 def sad
-				 scale_degrees = [0, 3, 5, 7, 10]
+				 @@scale_degrees = [0, 3, 5, 7, 10]
 			 end
 
 			 # locks notes to a scale
@@ -114,8 +114,8 @@ module SonicPi
 			   # make the first degree 1 instead of 0
 				 n = n - 1
 
-				 octave = n / scale_degrees.length
-				 degree = scale_degrees[n % scale_degrees.length]
+				 octave = n / @@scale_degrees.length
+				 degree = @@scale_degrees[n % scale_degrees.length]
 
 			   return 60 + (octave * 12) + degree
 			 end
