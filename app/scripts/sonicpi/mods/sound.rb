@@ -120,25 +120,40 @@ module SonicPi
 			   return 60 + (octave * 12) + degree
 			 end
 
-			 def saw(n)
+			 def saw(*notes)
 				 with_synth "saw_beep"
-				 play(lock_to_scale(n))
+				 simple_play(notes)
 			 end
 
-			 def fm(n)
+			 def fm(*notes)
 				 with_synth "fm"
-				 play(lock_to_scale(n))
+				simple_play(notes)
 			 end
 
-			 def beep(n)
+			 def beep(*notes)
 				 with_synth "beep"
-				 play(lock_to_scale(n))
+				 simple_play(notes)
 			 end
 
-			 def bell(n)
+			 def bell(*notes)
+
 				 with_synth "pretty_bell"
-				 play(lock_to_scale(n))
+				 simple_play(notes)
+				
 			 end
+
+			 def rest
+			 	 sleep 0.25
+			 end
+
+			 def simple_play(notes)
+
+			 	 notes.each{|note| play(lock_to_scale(note))}
+				
+				 sleep 0.25
+
+			 end
+
 
 			 def play(n, *args)
 				 n = note(n)
