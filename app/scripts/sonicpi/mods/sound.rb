@@ -125,6 +125,20 @@ module SonicPi
 				 simple_play(notes)
 			 end
 
+			 def boom()
+				 sample :drum_heavy_kick
+				 sleep 0.25
+			 end
+			 def clap()
+				 sample :drum_snare_soft
+				 sleep 0.25
+			 end
+
+			  def cha()
+				 sample :drum_cymbal_closed
+				 sleep 0.25
+			 end
+
 			 def fm(*notes)
 				 with_synth "fm"
 				simple_play(notes)
@@ -142,11 +156,33 @@ module SonicPi
 				
 			 end
 
+			 def bass(*notes)
+
+			 	notes.map! {|n| n - 10 }
+
+			  
+				 with_synth "mod_sine_s"
+
+				 with_synth_defaults :release, 0.4
+				
+
+				notes.each{|note| play(lock_to_scale(note))}
+				
+				 sleep 0.25
+			 end
+
 			 def rest
 			 	 sleep 0.25
 			 end
 
+			 def dice
+
+			 	 dice = rand(6)+1
+
+			 end
+
 			 def simple_play(notes)
+			 	with_synth_defaults :amp, 0.2
 
 			 	 notes.each{|note| play(lock_to_scale(note))}
 				
