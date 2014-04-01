@@ -185,9 +185,9 @@ module SonicPi
 				
 			 end
 
-			 def beep(*notes)
+			 def beep
 				 with_synth "beep"
-				 simple_play(notes)
+				 simple_play(1)
 			 end
 
 			 def bell(*notes)
