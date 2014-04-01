@@ -99,6 +99,17 @@ module SonicPi
 			 # stuff for locking stuff to a scale
 			 @@scale_degrees = [0, 3, 5, 7, 10]
 
+			def heads 
+
+				heads = 1
+
+			end
+			
+			def tails
+			
+			tails = 0
+			end 
+
 			 # sets scale to major pentatonic
 			 def happy
 				 @@scale_degrees = [0, 2, 4, 7, 9]
@@ -126,22 +137,52 @@ module SonicPi
 			 end
 
 			 def boom()
+			 	with_synth_defaults :amp, 0.2
 				 sample :drum_heavy_kick
 				 sleep 0.25
 			 end
 			 def clap()
+			 	with_synth_defaults :amp, 0.2
 				 sample :drum_snare_soft
 				 sleep 0.25
 			 end
 
-			  def cha()
-				 sample :drum_cymbal_closed
+			 def cha()
+			 	
+				 drum_play(':drum_cymbal_closed')
+				 
+			 end
+
+
+			 def drum_play(*drums)
+			 	
+			 	with_synth_defaults :amp, 0.2
+			 	drums.each{|drum|sample drum}
+			 	sleep 0.25
+
+			 end
+
+
+
+			 def crash()
+			 	with_synth_defaults :amp, 0.2
+				 sample :drum_cymbal_open
 				 sleep 0.25
 			 end
 
 			 def fm(*notes)
 				 with_synth "fm"
 				simple_play(notes)
+			 end
+
+			 def drums(*drums)
+
+			 	drums.each{|drum|
+
+			 		in_thread do  
+								drum
+									end}
+				
 			 end
 
 			 def beep(*notes)
@@ -178,8 +219,25 @@ module SonicPi
 			 def dice
 
 			 	 dice = rand(6)+1
-
+			 	 puts(dice)
+			 	 dice = dice
 			 end
+
+			 def coin
+
+			 	 coin = rand(2)
+			 	 puts(coin)
+			 	 coin = coin
+			 end
+
+			 def looping(n)
+				
+
+				looping = “hello”
+			 	puts n + str
+			 	 
+			 end
+
 
 			 def simple_play(notes)
 			 	with_synth_defaults :amp, 0.2
