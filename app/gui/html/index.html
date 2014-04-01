@@ -28,45 +28,16 @@
     <link rel="stylesheet" href="style//main.css">
   </head>
 
-  <body>
-	<div id="lessons">Lessons
+	<script type="text/javascript">
+		function loadMenu() {
+			loadLesson('lessons/menu.html');
+		}
+	</script>
 
-   <!-- <button id="load-lesson" class="btn btn-primary animated bounceInLeft" onClick="loadLesson('lessons/lesson1.html')">Run</button> -->
+  <body onload="loadMenu()">
+	<div id="lessons">
 
-
-
-
-
-   <ol>
-<li><a onClick="loadLesson('lessons/lesson1a.html')">Introduction</a></li>
-
-<li><a onClick="loadLesson('lessons/lesson2.html')">Sequencing</a></li>
-
-<li><a onClick="loadLesson('lessons/lesson3.html')">Loops</a></li>
-
-<li><a onClick="loadLesson('lessons/lesson4.html')">Reinforcement Lesson</a></li>
-
-<li><a onClick="loadLesson('lessons/lesson5.html')">Debugging</a></li>
-
-<li><a onClick="loadLesson('lessons/lesson6.html')">Functions Part 1</a></li>
-
-<li><a onClick="loadLesson('lessons/lesson7.html')">Functions Part 2</a></li>
-
-<li><a onClick="loadLesson('lessons/lesson8.html')">Concurrency</a></li>
-
-<li><a onClick="loadLesson('lessons/lesson9.html')">Reinforcement Lesson</a></li>
-
-<li><a onClick="loadLesson('lessons/lesson10.html')">Variables</a></li>
-
-<li><a onClick="loadLesson('lessons/lesson11.html')">Randomness</a></li>
-
-<li><a onClick="loadLesson('lessons/lesson12.html')">Conditionals</a></li>
-
-<li><a onClick="loadLesson('lessons/lesson13.html')">Reinforcement Lesson</a></li>
-
-</ol>
-
-</div>
+	</div>
 
 	<div id="main-content">
     <h1>Sonic Pi</h1>
